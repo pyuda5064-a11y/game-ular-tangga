@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐍 Ular Tangga Adventure</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #b8e6ff, #e9d5ff, #ffd6e7);
+    color: #44316b;
+    overflow-x: hidden;
+}
+
+/* HALAMAN AWAL */
+#startScreen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background:
+        radial-gradient(circle at 20% 20%, #ffffff88, transparent 30%),
+        linear-gradient(160deg, #9ee7ff, #d9c4ff, #ffcce5);
+}
+
+.start-card {
+    width: 100%;
+    max-width: 500px;
+    background: #ffffffdd;
+    border-radius: 30px;
+    padding: 40px 25px;
+    text-align: center;
+    box-shadow: 0 15px 45px #6b46a633;
+    border: 3px solid white;
+    animation: popIn .7s ease;
+}
+
+.game-logo {
+    font-size: 90px;
+    animation: float 3s ease-in-out infinite;
+}
+
+.start-card h1 {
+    font-size: clamp(30px, 7vw, 48px);
+    line-height: 1.2;
+    color: #7c3aed;
+    text-shadow: 3px 3px #fbcfe8;
+    margin: 15px 0;
+}
+
+.start-card p {
+    color: #76658f;
+    margin-bottom: 25px;
+}
+
+.btn {
+    border: none;
+    padding: 14px 25px;
+    border-radius: 15px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .2s;
+    color: white;
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+    filter: brightness(1.08);
+}
+
+.btn:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #8b5cf6, #5b21b6);
+    box-shadow: 0 6px 0 #4c1d95;
+}
+
+.btn-green {
+    background: linear-gradient(135deg, #34d399, #059669);
+}
+
+.btn-pink {
+    background: linear-gradient(135deg, #fb7185, #e11d48);
+}
+
+.btn-blue {
+    background: linear-gradient(135deg, #60a5fa, #2563eb);
+}
+
+.start-info {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+.badge {
+    background: #f3e8ff;
+    padding: 9px 15px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* HALAMAN GAME */
+#gameScreen {
+    display: none;
+    padding: 18px 12px 35px;
+}
+
+.game-container {
+    max-width: 760px;
+    margin: auto;
+}
+
+.game-header {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.game-header h1 {
+    color: #6d28d9;
+    font-size: clamp(23px, 5vw, 34px);
+}
+
+.game-header p {
+    font-size: 13px;
+    color: #735a93;
+}
+
+.top-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.icon-btn {
+    border: none;
+    background: white;
+    border-radius: 50%;
+    width: 43px;
+    height: 43px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px #0002;
+}
+
+/* INFORMASI PEMAIN */
+.players {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.player-card {
+    flex: 1;
+    background: white;
+    padding: 12px;
+    border-radius: 17px;
+    text-align: center;
+    box-shadow: 0 4px 15px #0001;
+    border: 3px solid transparent;
+    transition: .3s;
+}
+
+.player-card.active {
+    border-color: #a855f7;
+    background: #faf5ff;
+    transform: translateY(-3px);
+}
+
+.avatar {
+    font-size: 28px;
+}
+
+.player-card h3 {
+    font-size: 14px;
+}
+
+.player-card p {
+    font-size: 12px;
+}
+
+/* PAPAN */
+.board-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    background: white;
+    padding: 7px;
+    border-radius: 17px;
+    box-shadow: 0 10px 30px #64458a44;
+    overflow: hidden;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.cell {
+    position: relative;
+    border: 1px solid #ffffffaa;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 3px;
+    font-size: clamp(8px, 2vw, 14px);
+    font-weight: 800;
+    color: #55436c;
+}
+
+.cell:nth-child(4n+1) {
+    background: #fde2e4;
+}
+
+.cell:nth-child(4n+2) {
+    background: #d9f7be;
+}
+
+.cell:nth-child(4n+3) {
+    background: #dbeafe;
+}
+
+.cell:nth-child(4n) {
+    background: #f3e8ff;
+}
+
+.cell.start {
+    background: #86efac;
+}
+
+.cell.finish {
+    background: #fcd34d;
+}
+
+.cell-number {
+    position: relative;
+    z-index: 2;
+}
+
+.special-icon {
+    position: absolute;
+    right: 2px;
+    bottom: 2px;
+    font-size: clamp(9px, 2.2vw, 19px);
+    opacity: .65;
+}
+
+/* SVG ULAR DAN TANGGA */
+#pathsLayer {
+    position: absolute;
+    left: 7px;
+    top: 7px;
+    width: calc(100% - 14px);
+    height: calc(100% - 14px);
+    pointer-events: none;
+    z-index: 3;
+    overflow: visible;
+}
+
+.snake-body {
+    fill: none;
+    stroke-width: 3.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.snake-pattern {
+    fill: none;
+    stroke: #ffffffaa;
+    stroke-width: 1.1;
+    stroke-dasharray: 1 2;
+}
+
+.ladder-rail {
+    stroke: #a16207;
+    stroke-width: 1.2;
+    stroke-linecap: round;
+}
+
+.ladder-step {
+    stroke: #facc15;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+}
+
+/* TOKEN PEMAIN */
+.token {
+    position: absolute;
+    width: 5%;
+    height: 5%;
+    border-radius: 50%;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(9px, 2.2vw, 19px);
+    border: 2px solid white;
+    box-shadow: 0 3px 7px #0005;
+    transition: left .2s ease, top .2s ease;
+    transform: translate(-50%, -50%);
+}
+
+.token.red {
+    background: #ef4444;
+}
+
+.token.blue {
+    background: #3b82f6;
+}
+
+/* KONTROL GAME */
+.game-controls {
+    background: #ffffffee;
+    margin-top: 17px;
+    padding: 20px;
+    border-radius: 22px;
+    text-align: center;
+    box-shadow: 0 5px 20px #0001;
+}
+
+#turnText {
+    font-size: 18px;
+    color: #7c3aed;
+    margin-bottom: 10px;
+}
+
+.dice {
+    width: 85px;
+    height: 85px;
+    background: white;
+    border: 4px solid #a78bfa;
+    border-radius: 20px;
+    margin: 10px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 58px;
+    color: #7c3aed;
+    box-shadow: 0 6px 15px #0002;
+}
+
+.dice.rolling {
+    animation: diceRoll .12s linear infinite;
+}
+
+#message {
+    margin-top: 15px;
+    min-height: 45px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #694a91;
+}
+
+.control-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* POPUP PEMENANG */
+.overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #251344b8;
+    z-index: 20;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.popup {
+    background: white;
+    border-radius: 25px;
+    padding: 35px 22px;
+    text-align: center;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 15px 50px #0003;
+    animation: popIn .4s ease;
+}
+
+.popup h2 {
+    color: #7c3aed;
+    margin-bottom: 15px;
+}
+
+.popup p {
+    margin-bottom: 20px;
+}
+
+.popup .btn {
+    margin: 5px;
+}
+
+.trophy {
+    font-size: 80px;
+    animation: float 2s infinite;
+}
+
+/* KONFETI */
+.confetti {
+    position: fixed;
+    top: -20px;
+    width: 10px;
+    height: 16px;
+    z-index: 30;
+    pointer-events: none;
+    animation: confettiFall 3s linear forwards;
+}
+
+/* ANIMASI */
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+}
+
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: scale(.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes diceRoll {
+    0% { transform: rotate(0) scale(1); }
+    50% { transform: rotate(15deg) scale(1.1); }
+    100% { transform: rotate(-15deg) scale(1); }
+}
+
+@keyframes confettiFall {
+    to {
+        transform: translateY(110vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+footer {
+    text-align: center;
+    font-size: 11px;
+    color: #765c96;
+    margin-top: 20px;
+}
+
+@media (max-width: 450px) {
+    .game-logo {
+        font-size: 65px;
+    }
+
+    .start-card {
+        padding: 30px 18px;
+    }
+
+    .game-controls {
+        padding: 15px;
+    }
+
+    .token {
+        border-width: 1px;
+    }
+
+    .cell {
+        padding: 1px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- HALAMAN AWAL -->
+<section id="startScreen">
+    <div class="start-card">
+        <div class="game-logo">🐍🪜</div>
+
+        <h1>ULAR<br>TANGGA</h1>
+
+        <p>
+            ✨ Petualangan Seru Penuh Tantangan! ✨
+            <br>
+            Ayo bermain bersama temanmu!
+        </p>
+
+        <button class="btn btn-primary"
+                onclick="startGame()">
+            ▶ MULAI GAME
+        </button>
+
+        <div class="start-info">
+            <span class="badge">👥 2 Pemain</span>
+            <span class="badge">🎲 Dadu Animasi</span>
+            <span class="badge">🐍 100 Kotak</span>
+        </div>
+    </div>
+</section>
+
+<!-- HALAMAN PERMAINAN -->
+<section id="gameScreen">
+<div class="game-container">
+
+    <header class="game-header">
+        <h1>🐍 Ular Tangga Adventure 🪜</h1>
+        <p>Siapa yang lebih dulu mencapai kotak 100?</p>
+
+        <div class="top-buttons">
+            <button class="icon-btn"
+                    id="musicBtn"
+                    onclick="toggleMusic()">
+                🎵
+            </button>
+
+            <button class="icon-btn"
+                    onclick="showMenu()">
+                ☰
+            </button>
+        </div>
+    </header>
+
+    <div class="players">
+        <div class="player-card active" id="player0">
+            <div class="avatar">🔴</div>
+            <h3>Pemain 1</h3>
+            <p>Posisi: <span id="pos0">0</span></p>
+        </div>
+
+        <div class="player-card" id="player1">
+            <div class="avatar">🔵</div>
+            <h3>Pemain 2</h3>
+            <p>Posisi: <span id="pos1">0</span></p>
+        </div>
+    </div>
+
+    <div class="board-wrapper">
+        <div class="board" id="board"></div>
+
+        <svg id="pathsLayer"
+             viewBox="0 0 100 100"
+             preserveAspectRatio="none">
+        </svg>
+
+        <div class="token red" id="token0">1</div>
+        <div class="token blue" id="token1">2</div>
+    </div>
+
+    <div class="game-controls">
+        <h3 id="turnText">Giliran Pemain 1 🔴</h3>
+
+        <div class="dice" id="dice">⚀</div>
+
+        <div class="control-buttons">
+            <button class="btn btn-primary"
+                    id="rollBtn"
+                    onclick="rollDice()">
+                🎲 LEMPAR DADU
+            </button>
+
+            <button class="btn btn-pink"
+                    onclick="restartGame()">
+                🔄 Ulangi
+            </button>
+        </div>
+
+        <p id="message">
+            🎮 Permainan siap dimulai!
+        </p>
+    </div>
+
+    <footer>
+        Game Ular Tangga Modern • HTML CSS JavaScript
+        <br>
+        Dibuat untuk Tugas Sekolah
+    </footer>
+
+</div>
+</section>
+
+<!-- POPUP MENU -->
+<div class="overlay" id="menuOverlay">
+    <div class="popup">
+        <h2>🎮 Menu Game</h2>
+
+        <button class="btn btn-green"
+                onclick="closeMenu()">
+            ▶ Lanjutkan
+        </button>
+
+        <br>
+
+        <button class="btn btn-primary"
+                onclick="restartGame(); closeMenu()">
+            🔄 Mulai Ulang
+        </button>
+
+        <br>
+
+        <button class="btn btn-blue"
+                onclick="toggleMusic()">
+            🎵 Musik ON/OFF
+        </button>
+
+        <br>
+
+        <button class="btn btn-pink"
+                onclick="backToHome()">
+            🏠 Menu Utama
+        </button>
+    </div>
+</div>
+
+<!-- POPUP PEMENANG -->
+<div class="overlay" id="winnerOverlay">
+    <div class="popup">
+        <div class="trophy">🏆</div>
+
+        <h2>🎉 PEMENANG! 🎉</h2>
+
+        <h3 id="winnerName"></h3>
+
+        <p>
+            Selamat! Kamu berhasil mencapai
+            kotak 100!
+        </p>
+
+        <button class="btn btn-primary"
+                onclick="restartGame()">
+            🎮 Main Lagi
+        </button>
+
+        <button class="btn btn-pink"
+                onclick="backToHome()">
+            🏠 Menu Utama
+        </button>
+    </div>
+</div>
+
+<script>
+// ======================================
+// DATA GAME
+// ======================================
+
+const ladders = {
+    3: 22,
+    8: 30,
+    28: 55,
+    36: 44,
+    51: 67,
+    71: 92
+};
+
+const snakes = {
+    17: 4,
+    32: 10,
+    48: 26,
+    62: 18,
+    88: 24,
+    99: 78
+};
+
+let positions = [0, 0];
+let currentPlayer = 0;
+let gameOver = false;
+let rolling = false;
+let musicEnabled = true;
+
+const diceFaces = [
+    "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"
+];
+
+const board = document.getElementById("board");
+const svg = document.getElementById("pathsLayer");
+
+// ======================================
+// MEMBUAT PAPAN
+// ======================================
+
+function createBoard() {
+    board.innerHTML = "";
+
+    for (let row = 9; row >= 0; row--) {
+        let numbers = [];
+
+        for (let col = 1; col <= 10; col++) {
+            numbers.push(row * 10 + col);
+        }
+
+        if (row % 2 === 1) {
+            numbers.reverse();
+        }
+
+        numbers.forEach(num => {
+            const cell = document.createElement("div");
+
+            cell.className = "cell";
+            cell.id = "cell-" + num;
+
+            if (num === 1) cell.classList.add("start");
+            if (num === 100) cell.classList.add("finish");
+
+            let icon = "";
+
+            if (ladders[num]) icon = "🪜";
+            if (snakes[num]) icon = "🐍";
+            if (num === 100) icon = "🏆";
+
+            cell.innerHTML = `
+                <span class="cell-number">${num}</span>
+                <span class="special-icon">${icon}</span>
+            `;
+
+            board.appendChild(cell);
+        });
+    }
+
+    drawPaths();
+    updateBoard();
+}
+
+// ======================================
+// KOORDINAT KOTAK
+// ======================================
+
+function getCoords(num) {
+    const index = num - 1;
+    const rowFromBottom = Math.floor(index / 10);
+    const positionInRow = index % 10;
+
+    let col;
+
+    if (rowFromBottom % 2 === 0) {
+        col = positionInRow;
+    } else {
+        col = 9 - positionInRow;
+    }
+
+    return {
+        x: col * 10 + 5,
+        y: (9 - rowFromBottom) * 10 + 5
+    };
+}
+
+// ======================================
+// MEMBUAT GARIS SVG
+// ======================================
+
+function svgElement(tag, attrs) {
+    const el = document.createElementNS(
+        "http://www.w3.org/2000/svg", tag
+    );
+
+    for (const key in attrs) {
+        el.setAttribute(key, attrs[key]);
+    }
+
+    return el;
+}
+
+// ======================================
+// GAMBAR TANGGA MEMANJANG
+// ======================================
+
+function drawLadder(start, end) {
+    const a = getCoords(start);
+    const b = getCoords(end);
+
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+
+    const length = Math.hypot(dx, dy);
+
+    const px = -dy / length * 1.2;
+    const py = dx / length * 1.2;
+
+    // Bayangan tangga
+    const shadow = svgElement("line", {
+        x1: a.x + 0.5,
+        y1: a.y + 0.5,
+        x2: b.x + 0.5,
+        y2: b.y + 0.5,
+        stroke: "#00000033",
+        "stroke-width": 4
+    });
+
+    svg.appendChild(shadow);
+
+    // Dua sisi tangga
+    [-1, 1].forEach(side => {
+        svg.appendChild(svgElement("line", {
+            x1: a.x + px * side,
+            y1: a.y + py * side,
+            x2: b.x + px * side,
+            y2: b.y + py * side,
+            class: "ladder-rail"
+        }));
+    });
+
+    // Anak tangga
+    const steps = Math.max(4, Math.floor(length / 3));
+
+    for (let i = 1; i < steps; i++) {
+        const t = i / steps;
+
+        const x = a.x + dx * t;
+        const y = a.y + dy * t;
+
+        svg.appendChild(svgElement("line", {
+            x1: x - px,
+            y1: y - py,
+            x2: x + px,
+            y2: y + py,
+            class: "ladder-step"
+        }));
+    }
+}
+
+// ======================================
+// GAMBAR ULAR MELENGKUNG
+// ======================================
+
+function drawSnake(start, end, color, index) {
+    const a = getCoords(start);
+    const b = getCoords(end);
+
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    const length = Math.hypot(dx, dy);
+
+    const nx = -dy / length;
+    const ny = dx / length;
+
+    // Membuat badan ular berkelok
+    let path = "";
+
+    const segments = 50;
+
+    for (let i = 0; i <= segments; i++) {
+        const t = i / segments;
+
+        const wave = Math.sin(t * Math.PI * 5 + index) *
+                     Math.min(4, length * .12) *
+                     Math.sin(t * Math.PI);
+
+        const x = a.x + dx * t + nx * wave;
+        const y = a.y + dy * t + ny * wave;
+
+        path += (i === 0 ? "M" : "L") +
+                x.toFixed(2) + "," +
+                y.toFixed(2) + " ";
+    }
+
+    // Outline ular
+    svg.appendChild(svgElement("path", {
+        d: path,
+        fill: "none",
+        stroke: "#3b2f4a",
+        "stroke-width": 5,
+        "stroke-linecap": "round",
+        "stroke-linejoin": "round"
+    }));
+
+    // Badan ular
+    svg.appendChild(svgElement("path", {
+        d: path,
+        class: "snake-body",
+        stroke: color
+    }));
+
+    // Corak ular
+    svg.appendChild(svgElement("path", {
+        d: path,
+        class: "snake-pattern"
+    }));
+
+    // Kepala ular
+    svg.appendChild(svgElement("ellipse", {
+        cx: a.x,
+        cy: a.y,
+        rx: 3.1,
+        ry: 2.7,
+        fill: color,
+        stroke: "#3b2f4a",
+        "stroke-width": .5
+    }));
+
+    // Mata kiri
+    svg.appendChild(svgElement("circle", {
+        cx: a.x - 1,
+        cy: a.y - .7,
+        r: .55,
+        fill: "white"
+    }));
+
+    svg.appendChild(svgElement("circle", {
+        cx: a.x - 1,
+        cy: a.y - .7,
+        r: .25,
+        fill: "black"
+    }));
+
+    // Mata kanan
+    svg.appendChild(svgElement("circle", {
+        cx: a.x + 1,
+        cy: a.y - .7,
+        r: .55,
+        fill: "white"
+    }));
+
+    svg.appendChild(svgElement("circle", {
+        cx: a.x + 1,
+        cy: a.y - .7,
+        r: .25,
+        fill: "black"
+    }));
+
+    // Lidah ular
+    svg.appendChild(svgElement("path", {
+        d: `M ${a.x} ${a.y+2}
+            L ${a.x} ${a.y+4}
+            M ${a.x} ${a.y+4}
+            L ${a.x-1} ${a.y+5}
+            M ${a.x} ${a.y+4}
+            L ${a.x+1} ${a.y+5}`,
+        stroke: "#ef4444",
+        "stroke-width": .5,
+        fill: "none"
+    }));
+}
+
+// ======================================
+// MENGGAMBAR SEMUA ULAR DAN TANGGA
+// ======================================
+
+function drawPaths() {
+    svg.innerHTML = "";
+
+    Object.entries(ladders).forEach(([start, end]) => {
+        drawLadder(Number(start), end);
+    });
+
+    const colors = [
+        "#22c55e",
+        "#f97316",
+        "#ec4899",
+        "#06b6d4",
+        "#a855f7",
+        "#eab308"
+    ];
+
+    Object.entries(snakes).forEach(([start, end], i) => {
+        drawSnake(Number(start), end, colors[i], i);
+    });
+}
+
+// ======================================
+// MEMPERBARUI POSISI TOKEN
+// ======================================
+
+function updateTokens() {
+    positions.forEach((pos, index) => {
+        const token = document.getElementById("token" + index);
+
+        if (pos === 0) {
+            token.style.left = index === 0 ? "3%" : "7%";
+            token.style.top = "97%";
+            return;
+        }
+
+        const coords = getCoords(pos);
+
+        token.style.left =
+            (coords.x + (index === 0 ? -1.5 : 1.5)) + "%";
+
+        token.style.top =
+            (coords.y + (index === 0 ? -1 : 1)) + "%";
+    });
+}
+
+function updateBoard() {
+    positions.forEach((pos, index) => {
+        document.getElementById("pos" + index).textContent = pos;
+    });
+
+    document.getElementById("player0").classList.toggle(
+        "active", currentPlayer === 0
+    );
+
+    document.getElementById("player1").classList.toggle(
+        "active", currentPlayer === 1
+    );
+
+    if (!gameOver) {
+        document.getElementById("turnText").textContent =
+            "Giliran Pemain " + (currentPlayer + 1) +
+            (currentPlayer === 0 ? " 🔴" : " 🔵");
+    }
+
+    updateTokens();
+}
+
+// ======================================
+// MUSIK DAN EFEK SUARA
+// ======================================
+
+let audioCtx;
+let musicTimer = null;
+let noteIndex = 0;
+
+const melody = [
+    523, 659, 784, 659,
+    587, 698, 880, 698,
+    659, 784, 988, 784,
+    523, 659, 784, 523
+];
+
+function getAudio() {
+    if (!audioCtx) {
+        audioCtx = new (
+            window.AudioContext ||
+            window.webkitAudioContext
+        )();
+    }
+
+    if (audioCtx.state === "suspended") {
+        audioCtx.resume();
+    }
+
+    return audioCtx;
+}
+
+function playTone(freq, duration = .15, volume = .06) {
+    if (!musicEnabled) return;
+
+    const ctx = getAudio();
+
+    const oscillator = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    oscillator.type = "sine";
+    oscillator.frequency.value = freq;
+
+    gain.gain.setValueAtTime(volume, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(
+        .001, ctx.currentTime + duration
+    );
+
+    oscillator.connect(gain);
+    gain.connect(ctx.destination);
+
+    oscillator.start();
+    oscillator.stop(ctx.currentTime + duration);
+}
+
+function startMusic() {
+    if (!musicEnabled || musicTimer) return;
+
+    musicTimer = setInterval(() => {
+        playTone(melody[noteIndex], .23, .018);
+        noteIndex = (noteIndex + 1) % melody.length;
+    }, 350);
+}
+
+function stopMusic() {
+    clearInterval(musicTimer);
+    musicTimer = null;
+}
+
+function toggleMusic() {
+    musicEnabled = !musicEnabled;
+
+    document.getElementById("musicBtn").textContent =
+        musicEnabled ? "🎵" : "🔇";
+
+    if (musicEnabled) {
+        startMusic();
+    } else {
+        stopMusic();
+    }
+}
+
+function playWinSound() {
+    [523, 659, 784, 1046].forEach((note, i) => {
+        setTimeout(() => playTone(note, .3, .08), i * 180);
+    });
+}
+
+// ======================================
+// MULAI GAME
+// ======================================
+
+function startGame() {
+    document.getElementById("startScreen").style.display = "none";
+    document.getElementById("gameScreen").style.display = "block";
+
+    restartGame();
+    startMusic();
+}
+
+// ======================================
+// ANIMASI DADU
+// ======================================
+
+function wait(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function animateDice() {
+    const diceEl = document.getElementById("dice");
+
+    diceEl.classList.add("rolling");
+
+    for (let i = 0; i < 15; i++) {
+        const random = Math.floor(Math.random() * 6);
+        diceEl.textContent = diceFaces[random];
+
+        playTone(300 + i * 20, .05, .025);
+        await wait(70);
+    }
+
+    const result = Math.floor(Math.random() * 6) + 1;
+
+    diceEl.classList.remove("rolling");
+    diceEl.textContent = diceFaces[result - 1];
+
+    playTone(700, .2, .07);
+
+    return result;
+}
+
+// ======================================
+// ANIMASI PEMAIN BERJALAN
+// ======================================
+
+async function movePlayer(player, target) {
+    while (positions[player] < target) {
+        positions[player]++;
+        updateBoard();
+
+        playTone(350 + positions[player] * 3, .07, .025);
+
+        await wait(220);
+    }
+}
+
+async function slidePlayer(player, target) {
+    positions[player] = target;
+    updateBoard();
+
+    await wait(650);
+}
+
+// ======================================
+// LEMPAR DADU
+// ======================================
+
+async function rollDice() {
+    if (rolling || gameOver) return;
+
+    rolling = true;
+
+    const rollBtn = document.getElementById("rollBtn");
+    rollBtn.disabled = true;
+
+    const player = currentPlayer;
+
+    document.getElementById("message").textContent =
+        "🎲 Dadu sedang berputar...";
+
+    const dice = await animateDice();
+
+    const target = positions[player] + dice;
+
+    let message =
+        "Pemain " + (player + 1) +
+        " mendapatkan angka " + dice + ". ";
+
+    if (target <= 100) {
+        await movePlayer(player, target);
+
+        if (ladders[target]) {
+            message += "🪜 Hore! Naik tangga ke kotak " +
+                       ladders[target] + "!";
+
+            playTone(880, .3, .08);
+
+            await slidePlayer(player, ladders[target]);
+        }
+
+        else if (snakes[target]) {
+            message += "🐍 Ups! Turun ke kotak " +
+                       snakes[target] + "!";
+
+            playTone(220, .4, .08);
+
+            await slidePlayer(player, snakes[target]);
+        }
+    } else {
+        message +=
+            "Harus mendapat angka tepat untuk mencapai 100!";
+    }
+
+    document.getElementById("message").textContent = message;
+
+    if (positions[player] === 100) {
+        gameOver = true;
+
+        document.getElementById("turnText").textContent =
+            "🏆 Permainan Selesai!";
+
+        await wait(600);
+
+        showWinner(player);
+    } else {
+        currentPlayer = 1 - currentPlayer;
+        updateBoard();
+    }
+
+    rolling = false;
+    rollBtn.disabled = gameOver;
+}
+
+// ======================================
+// PEMENANG
+// ======================================
+
+function showWinner(player) {
+    document.getElementById("winnerName").textContent =
+        "🥇 Pemain " + (player + 1);
+
+    document.getElementById("winnerOverlay").style.display =
+        "flex";
+
+    playWinSound();
+    createConfetti();
+}
+
+function createConfetti() {
+    const colors = [
+        "#f472b6",
+        "#a78bfa",
+        "#facc15",
+        "#34d399",
+        "#60a5fa"
+    ];
+
+    for (let i = 0; i < 70; i++) {
+        const confetti = document.createElement("div");
+
+        confetti.className = "confetti";
+
+        confetti.style.left = Math.random() * 100 + "vw";
+
+        confetti.style.background =
+            colors[Math.floor(Math.random() * colors.length)];
+
+        confetti.style.animationDelay =
+            Math.random() * 2 + "s";
+
+        confetti.style.animationDuration =
+            2 + Math.random() * 2 + "s";
+
+        document.body.appendChild(confetti);
+
+        setTimeout(() => confetti.remove(), 5000);
+    }
+}
+
+// ======================================
+// MULAI ULANG
+// ======================================
+
+function restartGame() {
+    if (rolling) return;
+
+    positions = [0, 0];
+    currentPlayer = 0;
+    gameOver = false;
+
+    document.getElementById("dice").textContent = "⚀";
+
+    document.getElementById("message").textContent =
+        "🎮 Permainan dimulai! Semoga beruntung!";
+
+    document.getElementById("rollBtn").disabled = false;
+
+    document.getElementById("winnerOverlay").style.display =
+        "none";
+
+    updateBoard();
+}
+
+// ======================================
+// MENU
+// ======================================
+
+function showMenu() {
+    if (rolling) return;
+
+    document.getElementById("menuOverlay").style.display =
+        "flex";
+}
+
+function closeMenu() {
+    document.getElementById("menuOverlay").style.display =
+        "none";
+}
+
+function backToHome() {
+    if (rolling) return;
+
+    stopMusic();
+
+    document.getElementById("menuOverlay").style.display =
+        "none";
+
+    document.getElementById("winnerOverlay").style.display =
+        "none";
+
+    document.getElementById("gameScreen").style.display =
+        "none";
+
+    document.getElementById("startScreen").style.display =
+        "flex";
+
+    restartGame();
+}
+
+// ======================================
+// JALANKAN
+// ======================================
+
+createBoard();
+</script>
+
+</body>
+</html>
